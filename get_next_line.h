@@ -6,7 +6,7 @@
 /*   By: kkadlec <kkadlec@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 18:02:24 by kkadlec           #+#    #+#             */
-/*   Updated: 2021/06/13 19:08:02 by kkadlec          ###   ########.fr       */
+/*   Updated: 2021/06/16 22:59:48 by kkadlec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,15 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-int get_next_line(int fd, char **line);
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 15
+# endif
+
+int		get_next_line(int fd, char **line);
+char	*ft_strchr(const char *s, int c);
+char	*ft_strjoin(char const *s1, char const *s2);
+size_t	ft_strlcpy(char *dst, const char *src, size_t size);
+size_t	ft_strlcat(char *dst, const char *src, size_t size);
+size_t	ft_strlen(const char *s);
 
 #endif
