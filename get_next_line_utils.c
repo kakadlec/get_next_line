@@ -6,7 +6,7 @@
 /*   By: kkadlec <kkadlec@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 18:02:17 by kkadlec           #+#    #+#             */
-/*   Updated: 2021/06/16 21:56:50 by kkadlec          ###   ########.fr       */
+/*   Updated: 2021/06/17 22:33:18 by kkadlec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,6 @@ size_t	ft_strlen(const char *s)
 
 	i = 0;
 	while (s[i] != '\0')
-	{
 		i++;
-	}
 	return (i);
 }
