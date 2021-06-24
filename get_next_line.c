@@ -6,27 +6,11 @@
 /*   By: kkadlec <kkadlec@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/12 15:34:33 by kakadlec          #+#    #+#             */
-/*   Updated: 2021/06/17 22:54:47 by kkadlec          ###   ########.fr       */
+/*   Updated: 2021/06/24 20:45:55 by kkadlec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include "get_next_line.h"
-
-char	*ft_strdup(const char *s)
-{
-	char	*copy;
-	size_t	len;
-
-	len = ft_strlen(s) + 1;
-	if (!s)
-		return (NULL);
-	copy = (char *)malloc(len * sizeof(char));
-	if (!copy)
-		return (NULL);
-	ft_strlcpy(copy, s, len);
-	return (copy);
-}
 
 char	*ft_strnew(size_t size)
 {
@@ -45,37 +29,75 @@ char	*ft_strnew(size_t size)
 	return (str);
 }
 
+static int	check_buffer(char *buffer)
+{
+	int	i;
+	int	j;
+	int	read_status;
+
+	i = 0;
+	j = 0;
+	while (i < BUFFER_SIZE && buffer[i] != '\n')
+		i++;
+	if (i == BUFFER_SIZE)
+		read_status = 0;
+	else
+		read_status = (BUFFER_SIZE - 1) - i;
+	while (j < BUFFER_SIZE)
+	{
+		if (i < BUFFER_SIZE)
+			buffer[j] = buffer[++i];
+		else
+			buffer[j] = 0;
+		j++;
+	}
+	return (read_status);
+}
+
+static int	read_fd(int fd, char *buffer, char **content)
+{
+	char	*ptr;
+	int		read_status;
+	int		i;
+
+	read_status = check_buffer(buffer);
+	if (read_status == 0)
+		read_status = read(fd, buffer, BUFFER_SIZE);
+	if (read_status == -1)
+		return (-1);
+	i = 0;
+	while (i < read_status && buffer[i] != '\n')
+		i++;
+	ptr = ft_strjoin(*content, buffer, i);
+	if (!ptr)
+		return (-1);
+	if (*content)
+		free(*content);
+	*content = ptr;
+	if (buffer[i] == '\n')
+		return (1);
+	if (!read_status)
+		return (-2);
+	return (0);
+}
+
 int	get_next_line(int fd, char **line)
 {
-	char	*buffer;
-	//char	*temp;
-	char	*ptr;
-	static char *rest;
-	ssize_t	read_status;
+	static char	buffer[BUFFER_SIZE + 1];
+	char		*content;
+	int			complete;
 
-	buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE + 1);
-	*line = ft_strnew(0);
-	if (!buffer || !(*line)|| BUFFER_SIZE < 1 || read(fd, buffer, 0) < 0)
-		return (-1);
-	if (rest)
-		ft_strlcpy(*line, rest, ft_strlen(rest) + 1);
-	ptr = NULL;
-	while (!ptr && read_status != 0)
+	content = NULL;
+	complete = 0;
+	content = ft_strnew(0);
+	while (!complete)
 	{
-		read_status = read(fd, buffer, BUFFER_SIZE);
-		buffer[read_status] = '\0';
-		ptr = ft_strchr(buffer, '\n');
-		if (ptr)
-		{
-			*ptr = '\0';
-			ptr++;
-			rest = ft_strdup(ptr);
-		}
-		*line = ft_strjoin(*line, buffer);
+		complete = read_fd(fd, buffer, &content);
+		*line = content;
+		if (complete == -2)
+			return (0);
+		if (complete == -1)
+			return (-1);
 	}
-	free(buffer);
-	if (!ptr && read_status == 0)
-		return (0);
-	else
-		return (1);
+	return (1);
 }

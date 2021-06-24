@@ -6,20 +6,20 @@
 /*   By: kkadlec <kkadlec@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 18:02:17 by kkadlec           #+#    #+#             */
-/*   Updated: 2021/06/17 22:33:18 by kkadlec          ###   ########.fr       */
+/*   Updated: 2021/06/24 20:46:13 by kkadlec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char const *s1, char const *s2, size_t size)
 {
 	char	*str;
 	size_t	len;
 
 	if (!s1 || !s2)
 		return (NULL);
-	len = ft_strlen(s1) + ft_strlen(s2) + 1;
+	len = ft_strlen(s1) + size + 1;
 	str = malloc(len * sizeof(char));
 	if (!str)
 		return (NULL);
@@ -76,7 +76,6 @@ size_t	ft_strlcat(char *dst, const char *src, size_t size)
 	*dstc = '\0';
 	return (dstc_length + (src - src_start));
 }
-
 
 char	*ft_strchr(const char *s, int c)
 {
