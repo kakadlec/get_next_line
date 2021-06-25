@@ -6,7 +6,7 @@
 /*   By: kkadlec <kkadlec@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 18:02:24 by kkadlec           #+#    #+#             */
-/*   Updated: 2021/06/24 20:39:56 by kkadlec          ###   ########.fr       */
+/*   Updated: 2021/06/24 21:05:51 by kkadlec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,14 @@
 
 # include <unistd.h>
 # include <stdlib.h>
+# include <stdio.h>
 # include <stdbool.h>
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif
+
+# define MAX_FILE_DESCRIPTOR FOPEN_MAX
 
 int		get_next_line(int fd, char **line);
 char	*ft_strchr(const char *s, int c);

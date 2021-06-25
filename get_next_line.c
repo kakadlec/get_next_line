@@ -6,7 +6,7 @@
 /*   By: kkadlec <kkadlec@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/12 15:34:33 by kakadlec          #+#    #+#             */
-/*   Updated: 2021/06/24 20:45:55 by kkadlec          ###   ########.fr       */
+/*   Updated: 2021/06/24 21:05:07 by kkadlec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,8 @@ int	get_next_line(int fd, char **line)
 	char		*content;
 	int			complete;
 
+	if (fd < 0 || !line || BUFFER_SIZE < 1 || fd > MAX_FILE_DESCRIPTOR)
+		return (-1);
 	content = NULL;
 	complete = 0;
 	content = ft_strnew(0);
