@@ -6,100 +6,94 @@
 /*   By: kkadlec <kkadlec@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/12 15:34:33 by kakadlec          #+#    #+#             */
-/*   Updated: 2021/06/24 21:05:07 by kkadlec          ###   ########.fr       */
+/*   Updated: 2021/07/17 11:42:17 by kkadlec          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_strnew(size_t size)
+size_t	ft_strlen(const char *s)
 {
-	char	*str;
 	size_t	i;
 
-	str = (char *)malloc(sizeof(char) * (size + 1));
-	if (!str)
+	i = 0;
+	while (((char *)s)[i] != '\0')
+	{
+		i++;
+	}
+	return (i);
+}
+
+static void	delete_string(char **s)
+{
+	free(*s);
+	*s = NULL;
+}
+
+static char	*return_line(int ret, char **s)
+{
+	int		nl_index;
+	char	*tmp;
+	char	*line;
+
+	if (ret < 0)
 		return (NULL);
-	i = 0;
-	while (i <= size)
+	else if (ret == 0 && *s == NULL)
+		return (NULL);
+	nl_index = (int)(ft_strchr(*s, '\n') - *s);
+	if (ft_strchr(*s, '\n'))
 	{
-		str[i] = 0;
-		i++;
+		line = ft_substr(*s, 0, nl_index + 1);
+		tmp = ft_strdup(&((*s)[nl_index + 1]));
+		free(*s);
+		*s = tmp;
+		if ((*s)[0] == '\0')
+			delete_string(s);
 	}
-	return (str);
-}
-
-static int	check_buffer(char *buffer)
-{
-	int	i;
-	int	j;
-	int	read_status;
-
-	i = 0;
-	j = 0;
-	while (i < BUFFER_SIZE && buffer[i] != '\n')
-		i++;
-	if (i == BUFFER_SIZE)
-		read_status = 0;
 	else
-		read_status = (BUFFER_SIZE - 1) - i;
-	while (j < BUFFER_SIZE)
 	{
-		if (i < BUFFER_SIZE)
-			buffer[j] = buffer[++i];
+		line = ft_strdup(*s);
+		delete_string(s);
+	}
+	return (line);
+}
+
+static int	read_to_buff(int fd, char **s, char **buff)
+{
+	int		ret;
+	char	*tmp;
+
+	ret = read(fd, *buff, BUFFER_SIZE);
+	while (ret > 0)
+	{
+		(*buff)[ret] = '\0';
+		if (*s == NULL)
+			*s = ft_strdup(*buff);
 		else
-			buffer[j] = 0;
-		j++;
+		{
+			tmp = ft_strjoin(*s, *buff);
+			free(*s);
+			*s = tmp;
+		}
+		if (ft_strchr(*s, '\n'))
+			break ;
+		ret = read(fd, *buff, BUFFER_SIZE);
 	}
-	return (read_status);
+	free(*buff);
+	return (ret);
 }
 
-static int	read_fd(int fd, char *buffer, char **content)
+char	*get_next_line(int fd)
 {
-	char	*ptr;
-	int		read_status;
-	int		i;
+	static char	*s;
+	int			ret;
+	char		*buff;
 
-	read_status = check_buffer(buffer);
-	if (read_status == 0)
-		read_status = read(fd, buffer, BUFFER_SIZE);
-	if (read_status == -1)
-		return (-1);
-	i = 0;
-	while (i < read_status && buffer[i] != '\n')
-		i++;
-	ptr = ft_strjoin(*content, buffer, i);
-	if (!ptr)
-		return (-1);
-	if (*content)
-		free(*content);
-	*content = ptr;
-	if (buffer[i] == '\n')
-		return (1);
-	if (!read_status)
-		return (-2);
-	return (0);
-}
-
-int	get_next_line(int fd, char **line)
-{
-	static char	buffer[BUFFER_SIZE + 1];
-	char		*content;
-	int			complete;
-
-	if (fd < 0 || !line || BUFFER_SIZE < 1 || fd > MAX_FILE_DESCRIPTOR)
-		return (-1);
-	content = NULL;
-	complete = 0;
-	content = ft_strnew(0);
-	while (!complete)
-	{
-		complete = read_fd(fd, buffer, &content);
-		*line = content;
-		if (complete == -2)
-			return (0);
-		if (complete == -1)
-			return (-1);
-	}
-	return (1);
+	if (fd < 0)
+		return (NULL);
+	buff = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (fd < 0 || buff == NULL)
+		return (buff);
+	ret = read_to_buff(fd, &s, &buff);
+	return (return_line(ret, &s));
 }
